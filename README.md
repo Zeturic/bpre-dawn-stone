@@ -1,17 +1,21 @@
 ## Gender-specific Evolutionary Stones
 
-This adds evolution methods where an evolutionary stone will only trigger when the Pokemon is a particular gender, like the Dawn Stone for Kirlia -> Gallade and Snorunt -> Froslass.
+This adds evolution methods where an evolutionary stone will only trigger when the Pokémon is a particular gender, like the Dawn Stone for Kirlia -> Gallade and Snorunt -> Froslass.
 
 ![](example.png)
 
 ### How do I build this?
 
-If you've expanded your evolution table to support more than `5` evolutions per Pokemon, adjust the definition of `EVOLUTIONS_PER_POKEMON` in `constants.s`.
+Open `dawn-stone.asm` in your text editor of choice.
 
-By default, the evolution method ids are `17` for `Male + Stone` and `18` for `Female + Stone`. If that doesn't work for you, change `MALE_STONE` and `FEMALE_STONE`, also in `constants.s`.
+`rom` should be your ROM's filename.
 
-You will need to set an `ARMIPS` environment variable pointing to your `armips.exe`. You also need a `DEVKITARM` environment pointing to devkitARM v45's installation directory (likely `C:\devkitPro\devkitARM`).
+`free_space` is where you want the code to be inserted. You'll need `112` bytes, starting from a word-aligned offset (read: an offset ending in `0`, `4`, `8`, or `C`). 
 
-Python 3.6 or later is required.
+If you've expanded your evolution table to support more than `5` evolutions per Pokémon, adjust the definition of `EVOLUTIONS_PER_POKEMON`.
 
-Place your ROM in the project root directory and name it `rom.gba`. Run `python scripts/makinoa`. Your output is `test.gba`; `rom.gba` will be left unmodified.
+By default, the evolution method ids are `17` for `Male + Stone` and `18` for `Female + Stone`. If that doesn't work for you, change `MALE_STONE` and `FEMALE_STONE`.
+
+You'll need to have [armips](https://github.com/Kingcom/armips).
+
+Once you're ready, assemble with `armips dawn-stone.asm`. It'll insert the code directly into your ROM.

@@ -1,17 +1,35 @@
-.gba
-.arm
-.include "constants.s"
+// change these constants as needed
 
-.thumb
-.include "functions.s"
+rom equ "firered.gba"
+.definelabel free_space, 0x08800000
 
-.open "test.gba", 0x08000000
+EVOLUTIONS_PER_POKEMON equ 5
+
+MALE_STONE equ 17
+FEMALE_STONE equ 18
 
 // -----------------------------------------------------------------------------
+.definelabel hook, 0x08043182
+.definelabel noevo_return, 0x080431A2
+.definelabel doevo_return, 0x0804317C
 
-.org allocation
+.definelabel pokemon_getattr, 0x0803FBE8 
+.definelabel pokemon_species_get_gender_info, 0x0803F78C 
 
-.area allocation_size
+STONE equ 7
+
+// -----------------------------------------------------------------------------
+.gba
+.thumb
+
+.open rom, 0x08000000
+
+// -----------------------------------------------------------------------------
+.org free_space
+
+.area 112
+    .align 2
+    
     stonecheck:
 
     @@main:                             // [r3], r7, [r8], r9 := evolution_table, species, pokemon, chosen_stone
@@ -85,12 +103,9 @@
 .endarea
 
 // -----------------------------------------------------------------------------
-
 .org hook
 ldr r0, =stonecheck |1
 bx r0
 .pool
-
-// -----------------------------------------------------------------------------
 
 .close
