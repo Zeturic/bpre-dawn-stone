@@ -27,21 +27,20 @@ STONE equ 7
 // -----------------------------------------------------------------------------
 .org free_space
 
-.area 88
+.area 84
     .align 2
     
     stonecheck:
 
     @@main:                             // [r3], r5, r7, [r8], r9 := evolution_table, trigger, species, pokemon, chosen_stone
         mov r4, r7
-        mov r0, EVOLUTIONS_PER_POKEMON
-        lsl r0, r0, #3
+        mov r0, EVOLUTIONS_PER_POKEMON * 8
         mul r4, r0
         add r4, r3                      // r4 := [evolution_table[species]]
         add r6, r4, r0                  // r6 := [evolution_table[species + 1]]
 
     @@loop:
-        ldrh r0, [r4, 2]                // r0 := condition
+        ldrh r0, [r4, #2]                // r0 := condition
         cmp r0, r9
         bne @@next
 
