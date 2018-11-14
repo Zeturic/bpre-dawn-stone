@@ -27,7 +27,7 @@ STONE equ 7
 // -----------------------------------------------------------------------------
 .org free_space
 
-.area 104
+.area 88
     .align 2
     
     stonecheck:
@@ -74,25 +74,17 @@ STONE equ 7
         mov r5, #254
 
     @@checkgender:
-        bl @@get_personality
-        lsl r1, r0, #24
-        lsr r1, r1, #24
-        bl @@get_gender
+        mov r0, r7
+        mov r1, r8
+        ldrb r1, [r1]
+        ldr r3, =pokemon_species_get_gender_info |1
+        bl @@call
 
         cmp r0, r5
         beq @@doevo
         b @@next
 
-    @@get_personality:
-        mov r0, r8
-        mov r1, #0
-        mov r2, #0
-        ldr r3, =pokemon_getattr |1
-        bx r3
-
-    @@get_gender:
-        mov r0, r7
-        ldr r3, =pokemon_species_get_gender_info |1
+    @@call:
         bx r3
 
     .pool
