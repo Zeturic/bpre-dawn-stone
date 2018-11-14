@@ -10,7 +10,7 @@ Open `dawn-stone.asm` in your text editor of choice.
 
 `rom` should be your ROM's filename.
 
-`free_space` is where you want the code to be inserted. You'll need `112` bytes, starting from a word-aligned offset (read: an offset ending in `0`, `4`, `8`, or `C`). 
+`free_space` is where you want the code to be inserted. You'll need `104` bytes, starting from a word-aligned offset (read: an offset ending in `0`, `4`, `8`, or `C`). 
 
 If you've expanded your evolution table to support more than `5` evolutions per Pokémon, adjust the definition of `EVOLUTIONS_PER_POKEMON`.
 
