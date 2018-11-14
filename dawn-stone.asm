@@ -92,8 +92,11 @@ STONE equ 7
 
 // -----------------------------------------------------------------------------
 .org hook
-ldr r0, =stonecheck |1
-bx r0
-.pool
+
+.area 0x20, 0xFF
+    ldr r0, =stonecheck |1
+    bx r0
+    .pool
+.endarea
 
 .close
