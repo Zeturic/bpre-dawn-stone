@@ -32,20 +32,20 @@ STONE equ 7
     
     stonecheck:
 
-    @@main:                             // [r3], r7, [r8], r9 := evolution_table, species, pokemon, chosen_stone
+    @@main:                             // [r3], r5, r7, [r8], r9 := evolution_table, trigger, species, pokemon, chosen_stone
         mov r4, r7
         mov r0, EVOLUTIONS_PER_POKEMON
         lsl r0, r0, #3
-        mul r7, r0
-        add r7, r3                      // r7 := [evolution_table[species]]
-        add r6, r7, r0                  // r4 := [evolution_table[species + 1]]
+        mul r4, r0
+        add r4, r3                      // r4 := [evolution_table[species]]
+        add r6, r4, r0                  // r6 := [evolution_table[species + 1]]
 
     @@loop:
-        ldrh r0, [r7, 2]                // r0 := condition
+        ldrh r0, [r4, 2]                // r0 := condition
         cmp r0, r9
         bne @@next
 
-        ldrh r0, [r7, #0]                // r0 := type
+        ldrh r0, [r4, #0]                // r0 := type
         cmp r0, STONE
         beq @@doevo
         cmp r0, MALE_STONE
@@ -54,15 +54,15 @@ STONE equ 7
         beq @@checkfemale
 
     @@next:
-        add r7, #8
-        cmp r6, r7
+        add r4, #8
+        cmp r6, r4
         bne @@loop
 
         ldr r0, =noevo_return |1
         bx r0
 
     @@doevo:
-        mov r1, r7
+        mov r1, r4
         ldr r0, =doevo_return |1
         bx r0
 
@@ -91,7 +91,7 @@ STONE equ 7
         bx r3
 
     @@get_gender:
-        mov r0, r4
+        mov r0, r7
         ldr r3, =pokemon_species_get_gender_info |1
         bx r3
 
