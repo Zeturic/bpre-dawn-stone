@@ -22,7 +22,8 @@ STONE equ 7
 .gba
 .thumb
 
-.open rom, 0x08000000
+.create "test.gba", 0x08000000
+.import rom
 
 // -----------------------------------------------------------------------------
 .org free_space

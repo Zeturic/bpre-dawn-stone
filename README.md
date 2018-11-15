@@ -18,4 +18,4 @@ By default, the evolution method ids are `17` for `Male + Stone` and `18` for `F
 
 You'll need to have [armips](https://github.com/Kingcom/armips).
 
-Once you're ready, assemble with `armips dawn-stone.asm`. It'll insert the code directly into your ROM.
+Once you're ready, assemble with `armips dawn-stone.asm`. It'll insert the code into a modified copy of your ROM named `test.gba`.
