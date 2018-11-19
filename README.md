@@ -16,7 +16,11 @@ Open `evolutionary-stone.asm` in your text editor of choice.
 
 If you've expanded your evolution table to support more than `5` evolutions per Pokémon, adjust the definition of `EVOLUTIONS_PER_POKEMON`.
 
-By default, the evolution method ids are `16` for `Held Item + Stone`, `17` for `Male + Stone`, and `18` for `Female + Stone`. If that doesn't work for you, change `HELD_STONE`, `MALE_STONE`, and `FEMALE_STONE`. Additionally, if you don't want one of them, you can set them to `0` and their code will not get inserted and the space used will be less (`148` bytes is if everything is enabled).
+By default, the evolution method ids for the gender-specific evolutionary stones are `17` for `Male + Stone` and `18` for `Female + Stone`. `Held Item + Stone` defaults to `0`, which disables it and stops its code from being inserted and taking up space in your ROM.
+
+You can change the ids as needed by modifying `MALE_STONE`, `FEMALE_STONE`, and `HELD_STONE`. Any of the three can be disabled by setting them to `0`. For example, you could disable both `Male + Stone` and `Female + Stone` by setting `MALE_STONE` and `FEMALE_STONE` to `0` while simultaneously giving `Held Item + Stone` evolution method id `23` by setting `HELD_STONE` to `23`.
+
+The necessary `148` bytes mentioned above is specifically if every evolution method is enabled. It'll be less if one or more evolution methods are disabled.
 
 You'll need to have [armips](https://github.com/Kingcom/armips).
 

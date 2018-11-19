@@ -5,9 +5,10 @@ rom equ "firered.gba"
 
 EVOLUTIONS_PER_POKEMON equ 5
 
-HELD_STONE equ 16
 MALE_STONE equ 17
 FEMALE_STONE equ 18
+
+HELD_STONE equ 0
 
 // -----------------------------------------------------------------------------
 .definelabel hook, 0x08043182
