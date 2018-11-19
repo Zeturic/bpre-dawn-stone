@@ -27,7 +27,7 @@ STONE equ 7
 // -----------------------------------------------------------------------------
 .org free_space
 
-.area 84
+.area 96
     .align 2
     
     stonecheck:
@@ -37,8 +37,10 @@ STONE equ 7
         mov r0, EVOLUTIONS_PER_POKEMON * 8
         mul r4, r0
         add r4, r3                      // r4 := [evolution_table[species]]
-        add r6, r4, r0                  // r6 := [evolution_table[species + 1]]
-
+        add r0, r4, r0                  // r0 := [evolution_table[species + 1]]
+        sub sp, #4
+        str r0, [sp]
+        
     @@loop:
         ldrh r0, [r4, #2]                // r0 := condition
         cmp r0, r9
@@ -54,15 +56,18 @@ STONE equ 7
 
     @@next:
         add r4, #8
-        cmp r6, r4
+        ldr r0, [sp]
+        cmp r0, r4
         bne @@loop
 
         ldr r0, =noevo_return |1
+        add sp, #4
         bx r0
 
     @@doevo:
         mov r1, r4
         ldr r0, =doevo_return |1
+        add sp, #4
         bx r0
 
     @@checkmale:
