@@ -5,6 +5,7 @@ rom equ "firered.gba"
 
 EVOLUTIONS_PER_POKEMON equ 5
 
+HELD_STONE equ 16
 MALE_STONE equ 17
 FEMALE_STONE equ 18
 
@@ -13,8 +14,11 @@ FEMALE_STONE equ 18
 .definelabel noevo_return, 0x080431A2
 .definelabel doevo_return, 0x0804317C
 
-.definelabel pokemon_getattr, 0x0803FBE8 
-.definelabel pokemon_species_get_gender_info, 0x0803F78C 
+.definelabel pokemon_getattr, 0x0803FBE8
+.definelabel pokemon_setattr, 0x0804037C
+.definelabel pokemon_species_get_gender_info, 0x0803F78C
+
+req_helditem equ 0xC
 
 STONE equ 7
 
@@ -27,7 +31,7 @@ STONE equ 7
 // -----------------------------------------------------------------------------
 .org free_space
 
-.area 96
+.area 148
     .align 2
     
     stonecheck:
@@ -53,6 +57,8 @@ STONE equ 7
         beq @@checkmale
         cmp r0, FEMALE_STONE
         beq @@checkfemale
+        cmp r0, HELD_STONE
+        beq @@checkhelditem
 
     @@next:
         add r4, #8
@@ -88,8 +94,37 @@ STONE equ 7
         beq @@doevo
         b @@next
 
+    @@checkhelditem:
+        mov r0, r8
+        mov r1, #req_helditem
+        mov r2, #0
+        ldr r3, =pokemon_getattr |1
+        bl @@call
+
+        ldrh r1, [r4, #6]
+        cmp r0, r1
+        bne @@next
+
+        // #3 signifies the evolution is really happening
+        // not just being checked for (which is #2)
+        cmp r5, #3
+        bne @@doevo
+
+        mov r0, r8
+        mov r1, #req_helditem
+        ldr r2, =@@zero
+        ldr r3, =pokemon_setattr |1
+        bl @@call
+
+        b @@doevo
+
     @@call:
         bx r3
+
+    .align 2
+
+    @@zero:
+        .halfword 0
 
     .pool
 .endarea
@@ -102,5 +137,11 @@ STONE equ 7
     bx r0
     .pool
 .endarea
+
+.org 0x0811F4B0
+mov r1, #2
+
+.org 0x0804202E
+mov r1, #3
 
 .close
