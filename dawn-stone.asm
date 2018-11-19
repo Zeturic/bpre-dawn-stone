@@ -71,11 +71,11 @@ STONE equ 7
         bx r0
 
     @@checkmale:
-        mov r5, #0
+        mov r6, #0
         b @@checkgender
 
     @@checkfemale:
-        mov r5, #254
+        mov r6, #254
 
     @@checkgender:
         mov r0, r7
@@ -84,7 +84,7 @@ STONE equ 7
         ldr r3, =pokemon_species_get_gender_info |1
         bl @@call
 
-        cmp r0, r5
+        cmp r0, r6
         beq @@doevo
         b @@next
 
