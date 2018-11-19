@@ -25,3 +25,5 @@ The necessary `148` bytes mentioned above is specifically if every evolution met
 You'll need to have [armips](https://github.com/Kingcom/armips).
 
 Once you're ready, assemble with `armips evolutionary-stone.asm`. It'll insert the code directly into your ROM.
+
+It should be noted that `Held Item + Stone` evolutions will require hex editing to set up. With a proper ini, you could set the evolution method and evolutionary stone with PGE, but the held item is stored in the [two padding bytes](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_evolution_data_structure_in_Generation_III) which PGE does not support editing.
