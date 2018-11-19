@@ -53,12 +53,21 @@ STONE equ 7
         ldrh r0, [r4, #0]                // r0 := type
         cmp r0, STONE
         beq @@doevo
+
+        .if MALE_STONE
         cmp r0, MALE_STONE
         beq @@checkmale
+        .endif
+
+        .if FEMALE_STONE
         cmp r0, FEMALE_STONE
         beq @@checkfemale
+        .endif
+
+        .if HELD_STONE
         cmp r0, HELD_STONE
         beq @@checkhelditem
+        .endif
 
     @@next:
         add r4, #8
@@ -76,13 +85,18 @@ STONE equ 7
         add sp, #4
         bx r0
 
+    .if MALE_STONE
     @@checkmale:
         mov r6, #0
         b @@checkgender
+    .endif
 
+    .if FEMALE_STONE
     @@checkfemale:
         mov r6, #254
+    .endif
 
+    .if MALE_STONE || FEMALE_STONE
     @@checkgender:
         mov r0, r7
         mov r1, r8
@@ -93,7 +107,9 @@ STONE equ 7
         cmp r0, r6
         beq @@doevo
         b @@next
+    .endif
 
+    .if HELD_STONE
     @@checkhelditem:
         mov r0, r8
         mov r1, #req_helditem
@@ -117,14 +133,17 @@ STONE equ 7
         bl @@call
 
         b @@doevo
+    .endif
 
     @@call:
         bx r3
 
+    .if HELD_STONE
     .align 2
 
     @@zero:
         .halfword 0
+    .endif
 
     .pool
 .endarea
