@@ -1,29 +1,6 @@
-// change these constants as needed
-
-inrom equ "rom.gba"
-outrom equ "test.gba"
-.definelabel free_space, 0x08800000
-
-EVOS_PER_MON equ 5
-
-EVO_ITEM_MALE equ 17
-EVO_ITEM_FEMALE equ 18
-
-EVO_ITEM_HELD_ITEM equ 0
-
-// -----------------------------------------------------------------------------
-
-.definelabel GetEvolutionTargetSpecies_hook_addr, 0x08043182
-.definelabel GetEvolutionTargetSpecies_hook_return_failure, 0x080431A2
-.definelabel GetEvolutionTargetSpecies_hook_return_success, 0x0804317C
-
-.definelabel GetMonData, 0x0803FBE8
-.definelabel SetMonData, 0x0804037C
-.definelabel GetGenderFromSpeciesAndPersonality, 0x0803F78C
-
-MON_DATA_HELD_ITEM equ 0xC
-
-EVO_ITEM equ 7
+.include "config.s"
+.include "labels.s"
+.include "constants.s"
 
 // -----------------------------------------------------------------------------
 

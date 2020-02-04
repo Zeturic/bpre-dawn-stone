@@ -1,0 +1,3 @@
+MON_DATA_HELD_ITEM equ 0xC
+
+EVO_ITEM equ 7
