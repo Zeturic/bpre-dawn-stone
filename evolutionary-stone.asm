@@ -1,158 +1,159 @@
 // change these constants as needed
 
-rom equ "firered.gba"
+inrom equ "rom.gba"
+outrom equ "test.gba"
 .definelabel free_space, 0x08800000
 
-EVOLUTIONS_PER_POKEMON equ 5
+EVOS_PER_MON equ 5
 
-MALE_STONE equ 17
-FEMALE_STONE equ 18
+EVO_ITEM_MALE equ 17
+EVO_ITEM_FEMALE equ 18
 
-HELD_STONE equ 0
-
-// -----------------------------------------------------------------------------
-.definelabel hook, 0x08043182
-.definelabel noevo_return, 0x080431A2
-.definelabel doevo_return, 0x0804317C
-
-.definelabel pokemon_getattr, 0x0803FBE8
-.definelabel pokemon_setattr, 0x0804037C
-.definelabel pokemon_species_get_gender_info, 0x0803F78C
-
-req_helditem equ 0xC
-
-STONE equ 7
+EVO_ITEM_HELD_ITEM equ 0
 
 // -----------------------------------------------------------------------------
+
+.definelabel GetEvolutionTargetSpecies_hook_addr, 0x08043182
+.definelabel GetEvolutionTargetSpecies_hook_return_failure, 0x080431A2
+.definelabel GetEvolutionTargetSpecies_hook_return_success, 0x0804317C
+
+.definelabel GetMonData, 0x0803FBE8
+.definelabel SetMonData, 0x0804037C
+.definelabel GetGenderFromSpeciesAndPersonality, 0x0803F78C
+
+MON_DATA_HELD_ITEM equ 0xC
+
+EVO_ITEM equ 7
+
+// -----------------------------------------------------------------------------
+
 .gba
 .thumb
 
-.open rom, 0x08000000
+.open inrom, outrom, 0x08000000
 
 // -----------------------------------------------------------------------------
+
 .org free_space
+.align 2
 
-.area 148
-    .align 2
+stonecheck:
+
+@@main:                             // [r3], r5, r7, [r8], r9 := evolution_table, trigger, species, pokemon, chosen_stone
+    mov r4, r7
+    mov r0, EVOS_PER_MON * 8
+    mul r4, r0
+    add r4, r3                      // r4 := [evolution_table[species]]
+    add r0, r4, r0                  // r0 := [evolution_table[species + 1]]
+    sub sp, #4
+    str r0, [sp]
     
-    stonecheck:
+@@loop:
+    ldrh r0, [r4, #2]                // r0 := condition
+    cmp r0, r9
+    bne @@next
 
-    @@main:                             // [r3], r5, r7, [r8], r9 := evolution_table, trigger, species, pokemon, chosen_stone
-        mov r4, r7
-        mov r0, EVOLUTIONS_PER_POKEMON * 8
-        mul r4, r0
-        add r4, r3                      // r4 := [evolution_table[species]]
-        add r0, r4, r0                  // r0 := [evolution_table[species + 1]]
-        sub sp, #4
-        str r0, [sp]
-        
-    @@loop:
-        ldrh r0, [r4, #2]                // r0 := condition
-        cmp r0, r9
-        bne @@next
+    ldrh r0, [r4, #0]                // r0 := type
+    cmp r0, EVO_ITEM
+    beq @@doevo
 
-        ldrh r0, [r4, #0]                // r0 := type
-        cmp r0, STONE
-        beq @@doevo
-
-        .if MALE_STONE
-        cmp r0, MALE_STONE
-        beq @@checkmale
-        .endif
-
-        .if FEMALE_STONE
-        cmp r0, FEMALE_STONE
-        beq @@checkfemale
-        .endif
-
-        .if HELD_STONE
-        cmp r0, HELD_STONE
-        beq @@checkhelditem
-        .endif
-
-    @@next:
-        add r4, #8
-        ldr r0, [sp]
-        cmp r0, r4
-        bne @@loop
-
-        ldr r0, =noevo_return |1
-        add sp, #4
-        bx r0
-
-    @@doevo:
-        mov r1, r4
-        ldr r0, =doevo_return |1
-        add sp, #4
-        bx r0
-
-    .if MALE_STONE
-    @@checkmale:
-        mov r6, #0
-        b @@checkgender
+    .if EVO_ITEM_MALE
+    cmp r0, EVO_ITEM_MALE
+    beq @@checkmale
     .endif
 
-    .if FEMALE_STONE
-    @@checkfemale:
-        mov r6, #254
+    .if EVO_ITEM_FEMALE
+    cmp r0, EVO_ITEM_FEMALE
+    beq @@checkfemale
     .endif
 
-    .if MALE_STONE || FEMALE_STONE
-    @@checkgender:
-        mov r0, r7
-        mov r1, r8
-        ldrb r1, [r1]
-        ldr r3, =pokemon_species_get_gender_info |1
-        bl @@call
-
-        cmp r0, r6
-        beq @@doevo
-        b @@next
+    .if EVO_ITEM_HELD_ITEM
+    cmp r0, EVO_ITEM_HELD_ITEM
+    beq @@checkhelditem
     .endif
 
-    .if HELD_STONE
-    @@checkhelditem:
-        mov r0, r8
-        mov r1, #req_helditem
-        mov r2, #0
-        ldr r3, =pokemon_getattr |1
-        bl @@call
+@@next:
+    add r4, #8
+    ldr r0, [sp]
+    cmp r0, r4
+    bne @@loop
 
-        ldrh r1, [r4, #6]
-        cmp r0, r1
-        bne @@next
+    ldr r0, =GetEvolutionTargetSpecies_hook_return_failure |1
+    add sp, #4
+    bx r0
 
-        // #3 signifies the evolution is really happening
-        // not just being checked for (which is #2)
-        cmp r5, #3
-        bne @@doevo
+@@doevo:
+    mov r1, r4
+    ldr r0, =GetEvolutionTargetSpecies_hook_return_success |1
+    add sp, #4
+    bx r0
 
-        mov r0, r8
-        mov r1, #req_helditem
-        ldr r2, =@@zero
-        ldr r3, =pokemon_setattr |1
-        bl @@call
+.if EVO_ITEM_MALE
+@@checkmale:
+    mov r6, #0
+    b @@checkgender
+.endif
 
-        b @@doevo
-    .endif
+.if EVO_ITEM_FEMALE
+@@checkfemale:
+    mov r6, #254
+.endif
 
-    @@call:
-        bx r3
+.if EVO_ITEM_MALE || EVO_ITEM_FEMALE
+@@checkgender:
+    mov r0, r7
+    mov r1, r8
+    ldrb r1, [r1]
+    ldr r3, =GetGenderFromSpeciesAndPersonality |1
+    bl @@call
 
-    .if HELD_STONE
-    .align 2
+    cmp r0, r6
+    beq @@doevo
+    b @@next
+.endif
 
-    @@zero:
-        .halfword 0
-    .endif
+.if EVO_ITEM_HELD_ITEM
+@@checkhelditem:
+    mov r0, r8
+    mov r1, #MON_DATA_HELD_ITEM
+    mov r2, #0
+    ldr r3, =GetMonData |1
+    bl @@call
 
-    .pool
-.endarea
+    ldrh r1, [r4, #6]
+    cmp r0, r1
+    bne @@next
+
+    // #3 signifies the evolution is really happening
+    // not just being checked for (which is #2)
+    cmp r5, #3
+    bne @@doevo
+
+    mov r0, r8
+    mov r1, #MON_DATA_HELD_ITEM
+    ldr r2, =@@zero
+    ldr r3, =SetMonData |1
+    bl @@call
+
+    b @@doevo
+.endif
+
+@@call:
+    bx r3
+
+.if EVO_ITEM_HELD_ITEM
+.align 2
+
+@@zero:
+    .halfword 0
+.endif
+
+.pool
 
 // -----------------------------------------------------------------------------
-.org hook
 
-.area 0x20, 0xFF
+.org GetEvolutionTargetSpecies_hook_addr
+.area 0x20, 0xFE
     ldr r0, =stonecheck |1
     bx r0
     .pool
