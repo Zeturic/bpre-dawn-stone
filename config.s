@@ -4,7 +4,7 @@ outrom equ "test.gba"
 
 EVOS_PER_MON equ 5
 
-EVO_ITEM_MALE equ 17
-EVO_ITEM_FEMALE equ 18
+EVO_ITEM_MALE equ 0x11
+EVO_ITEM_FEMALE equ 0x12
 
-EVO_ITEM_HELD_ITEM equ 0
+EVO_ITEM_HELD_ITEM equ 0x10
