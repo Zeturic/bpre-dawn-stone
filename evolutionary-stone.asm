@@ -80,7 +80,7 @@ stonecheck:
 @@checkgender:
     mov r0, r7
     mov r1, r8
-    ldrb r1, [r1]
+    ldr r1, [r1]
     ldr r3, =GetGenderFromSpeciesAndPersonality |1
     bl @@call
 
